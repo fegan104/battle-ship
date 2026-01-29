@@ -169,14 +169,18 @@ func (m Model) updateBattle(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.CursorCol++
 		}
 	case "enter":
-		hit, alreadyAttacked := m.AIBoard.Attack(m.CursorRow, m.CursorCol)
+		hit, alreadyAttacked, sunkShipName := m.AIBoard.Attack(m.CursorRow, m.CursorCol)
 		if alreadyAttacked {
 			m.Message = "Already attacked this location!"
 			return m, nil
 		}
 
 		if hit {
-			m.Message = "HIT!"
+			if sunkShipName != "" {
+				m.Message = "HIT! You sunk their " + sunkShipName + "!"
+			} else {
+				m.Message = "HIT!"
+			}
 			if m.AIBoard.AllShipsSunk() {
 				m.State = StateGameOver
 				m.PlayerWon = true
@@ -201,11 +205,15 @@ type aiTurnMsg struct{}
 // handleAITurn processes the AI's attack
 func (m Model) handleAITurn() (tea.Model, tea.Cmd) {
 	row, col := m.AI.ChooseAttack()
-	hit, _ := m.PlayerBoard.Attack(row, col)
+	hit, _, sunkShipName := m.PlayerBoard.Attack(row, col)
 
 	if hit {
 		m.AI.RecordHit(row, col)
-		m.Message += " | Enemy hit your ship!"
+		if sunkShipName != "" {
+			m.Message += " | Enemy sunk your " + sunkShipName + "!"
+		} else {
+			m.Message += " | Enemy hit your ship!"
+		}
 		if m.PlayerBoard.AllShipsSunk() {
 			m.State = StateGameOver
 			m.PlayerWon = false

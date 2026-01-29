@@ -59,33 +59,36 @@ func (b *Board) PlaceShip(ship *Ship, row, col int, horizontal bool) bool {
 	return true
 }
 
-// Attack attacks a cell and returns true if it was a hit
-func (b *Board) Attack(row, col int) (hit bool, alreadyAttacked bool) {
+// Attack attacks a cell and returns true if it was a hit, and the ship name if sunk
+func (b *Board) Attack(row, col int) (hit bool, alreadyAttacked bool, sunkShipName string) {
 	if row < 0 || row >= BoardSize || col < 0 || col >= BoardSize {
-		return false, true
+		return false, true, ""
 	}
 
 	cell := b.Cells[row][col]
 	if cell == Hit || cell == Miss {
-		return false, true
+		return false, true, ""
 	}
 
 	if cell == ShipCell {
 		b.Cells[row][col] = Hit
-		// Mark the hit on the ship
+		// Mark the hit on the ship and check if sunk
 		for _, ship := range b.Ships {
 			for i, pos := range ship.Positions {
 				if pos[0] == row && pos[1] == col {
 					ship.Hits[i] = true
+					if ship.IsSunk() {
+						return true, false, ship.Name
+					}
 					break
 				}
 			}
 		}
-		return true, false
+		return true, false, ""
 	}
 
 	b.Cells[row][col] = Miss
-	return false, false
+	return false, false, ""
 }
 
 // AllShipsSunk returns true if all ships have been sunk
