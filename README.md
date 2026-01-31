@@ -19,11 +19,12 @@ Handles the TUI using the [Bubble Tea](https://github.com/charmbracelet/bubblete
 - **`styles.go`**: Defines the color palette and layout styles.
 
 ### 3. `net/` (Networking)
-Manages TCP communication for multiplayer.
-- **`network.go`**: Implements a custom JSON-based protocol over TCP. Handles connection establishment (Server/Client) and message exchange (Attacks, Results, Game Over).
+Manages WebSocket communication for multiplayer.
+- **`network.go`**: Implements a custom JSON-based protocol over WebSockets. Handles connection to the central server and message exchange (Room creation, Attacks, Results).
 
 ### `main.go`
 The entry point that initializes the Bubble Tea program and starts the application.
+- **`cmd/server/main.go`**: The central WebSocket server that manages game rooms and relays messages between players.
 
 ## How it Works
 
@@ -31,29 +32,37 @@ The application runs in a loop driven by the Bubble Tea framework:
 1.  **Update**: Listens for keypresses or network messages. It updates the `Model` (e.g., moves cursor, recording a hit).
 2.  **View**: Generates a string representation of the current `Model` to display in the terminal.
 
-In **Multiplayer Mode**, the game uses an async message loop. When a player fires, an `Attack` message is sent over TCP. The opponent receives it, updates their board, and sends back an `AttackResult` (Hit/Miss/Sunk).
+In **Multiplayer Mode**, clients connect to a central server via WebSockets.
+- **Hosting**: A player creates a room and receives a unique 4-letter code.
+- **Joining**: Another player enters that code to join the session.
+- **Battle**: The server relays game messages (Attacks, Results) between the two connected players.
 
 ## How to Run
 
 Ensure you have Go installed (1.21+ recommended).
 
-### Run directly
+### 1. Start the Server
+The multiplayer feature requires the central server to be running.
+
+```bash
+go run cmd/server/main.go
+```
+*   The server listens on port `8080`.
+
+### 2. Run the Game Client
+Open a new terminal (or multiple for local testing) and run the game.
+
 ```bash
 go run .
-```
-
-### Build and Run
-```bash
-go build -o battleship .
-./battleship
 ```
 
 ## How to Play
 
 ### Game Modes
 1.  **Play vs AI**: Classic single-player mode against the computer.
-2.  **Host Game**: Starts a TCP server on port `8080`. Wait for a friend to connect.
-3.  **Join Game**: Connect to a hosting player by entering their IP address (or `localhost` for local testing).
+2.  **Multiplayer**:
+    *   **Host Game**: Create a new room and get a Room Code (e.g., `ABCD`).
+    *   **Join Game**: Enter a Room Code to play against a friend.
 
 ### Controls
 

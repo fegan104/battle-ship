@@ -6,8 +6,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strings"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -74,8 +74,6 @@ var server = &Server{
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-
 	http.HandleFunc("/ws", handleConnections)
 
 	port := 8080
@@ -153,6 +151,7 @@ func handleCreateRoom(client *Client) {
 }
 
 func handleJoinRoom(client *Client, code string) {
+	code = strings.ToUpper(code)
 	server.mu.Lock()
 	room, exists := server.rooms[code]
 	server.mu.Unlock()
