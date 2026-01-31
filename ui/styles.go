@@ -108,4 +108,20 @@ var (
 	statusStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#A0AEC0")).
 			MarginTop(1)
+
+	// Menu selection styles
+	selectedMenuStyle = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("#48BB78")).
+				Bold(true).
+				MarginLeft(2)
+
+	menuItemStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#A0AEC0")).
+			MarginLeft(2)
+
+	// Input field style
+	inputStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#63B3ED")).
+			Background(lipgloss.Color("#2D3748")).
+			Padding(0, 1)
 )
