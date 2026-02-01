@@ -72,7 +72,7 @@ type Connection struct {
 }
 
 // Send sends a message over the connection
-func (c *Connection) Send(msgType MessageType, payload interface{}) error { // Changed receiver to pointer
+func (c *Connection) Send(msgType MessageType, payload any) error { // Changed receiver to pointer
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -108,7 +108,7 @@ func (c *Connection) Close() error { // Changed receiver to pointer
 
 // Connect connects to the central server
 func Connect(address string) (*Connection, error) {
-	url := fmt.Sprintf("ws://%s/ws", address)
+	url := fmt.Sprintf("wss://%s/ws", address)
 	log.Printf("Connecting to %s", url)
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {

@@ -83,7 +83,7 @@ func NewModel() Model {
 		CurrentShipIndex:  0,
 		PlacingHorizontal: true,
 		MenuSelection:     0,
-		ServerAddress:     "localhost:8080", // Default central server
+		ServerAddress:     "battleship-server-350181966586.us-central1.run.app", // Default central server or localhost:8080 for local development
 	}
 }
 
