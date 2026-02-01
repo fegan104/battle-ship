@@ -31,32 +31,35 @@ const (
 	MsgOpponentLeft = "opponent_left"
 )
 
-// Wrapper for messages
+// Message is the wrapper for all network messages types.
 type Message struct {
 	Type    string          `json:"type"`
 	Payload json.RawMessage `json:"payload"`
 }
 
+// CreateRoomResponse is the response payload for creating a room.
 type CreateRoomResponse struct {
 	Code string `json:"code"`
 }
 
+// JoinRoomPayload is the request payload for joining a room.
 type JoinRoomPayload struct {
 	Code string `json:"code"`
 }
 
+// ErrorPayload is the payload for error messages.
 type ErrorPayload struct {
 	Message string `json:"message"`
 }
 
-// Client represents a connected player
+// Client represents a connected player's WebSocket connection and state.
 type Client struct {
 	conn   *websocket.Conn
 	room   *Room
 	isHost bool
 }
 
-// Room represents a game session
+// Room represents a game session between two players.
 type Room struct {
 	Code  string
 	Host  *Client
@@ -64,6 +67,7 @@ type Room struct {
 	mu    sync.Mutex
 }
 
+// Server manages active rooms and concurrency.
 type Server struct {
 	rooms map[string]*Room
 	mu    sync.RWMutex

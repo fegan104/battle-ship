@@ -4,22 +4,24 @@ import (
 	"math/rand"
 )
 
-// AI handles computer opponent logic
+// AI handles computer opponent logic.
+// It maintains state about past attacks and uses a hunt/target strategy.
 type AI struct {
-	lastHit      *[2]int
-	huntMode     bool
-	huntTargets  [][2]int
+	lastHit       *[2]int
+	huntMode      bool
+	huntTargets   [][2]int
 	attackedCells map[[2]int]bool
 }
 
-// NewAI creates a new AI opponent
+// NewAI creates a new AI opponent with initialized state.
 func NewAI() *AI {
 	return &AI{
 		attackedCells: make(map[[2]int]bool),
 	}
 }
 
-// PlaceShipsRandomly places all ships randomly on the board
+// PlaceShipsRandomly places all standard ships randomly on the board.
+// It ensures that ships fit within the board boundaries and do not overlap.
 func (ai *AI) PlaceShipsRandomly(board *Board) {
 	ships := ShipDefinitions()
 
@@ -37,7 +39,9 @@ func (ai *AI) PlaceShipsRandomly(board *Board) {
 	}
 }
 
-// ChooseAttack selects a cell to attack
+// ChooseAttack selects a cell to attack.
+// It uses a target stack when in hunt mode (after a hit) or random selection otherwise.
+// Returns the row and column of the target cell.
 func (ai *AI) ChooseAttack() (int, int) {
 	// If we have hunt targets from a previous hit, try those first
 	if ai.huntMode && len(ai.huntTargets) > 0 {
@@ -66,7 +70,8 @@ func (ai *AI) ChooseAttack() (int, int) {
 	}
 }
 
-// RecordHit tells the AI about a successful hit
+// RecordHit tells the AI about a successful hit at the given coordinates.
+// This triggers "hunt mode" where the AI will target adjacent cells in subsequent turns.
 func (ai *AI) RecordHit(row, col int) {
 	ai.lastHit = &[2]int{row, col}
 	ai.huntMode = true
@@ -88,7 +93,8 @@ func (ai *AI) RecordHit(row, col int) {
 	}
 }
 
-// RecordMiss tells the AI about a miss
+// RecordMiss tells the AI about a miss at the given coordinates.
+// Currently, this does not affect future strategy beyond marking the cell as attacked.
 func (ai *AI) RecordMiss(row, col int) {
 	// Nothing special to do on a miss
 }
